@@ -9,6 +9,7 @@ const (
 	EventNewPlayer    = "new_player"
 	EventAllPlayers   = "all_players"
 	EventRemovePlayer = "remove_player"
+	EventMovePlayer   = "move_player"
 )
 
 type event struct {
@@ -17,7 +18,7 @@ type event struct {
 }
 
 func handleAllPlayersEvent(ev event, p *player) error {
-	players := p.hub.getAllPlayers()
+	players := p.hub.getAllPlayers(p)
 	data, err := json.Marshal(players)
 	if err != nil {
 		log.Printf("error marshaling players: %v\n", err)
@@ -63,6 +64,7 @@ func handleRemovePlayerEvent(ev event, p *player) error {
 	data, err := json.Marshal(p)
 	if err != nil {
 		log.Printf("error marshaling player: %v\n", err)
+		return err
 	}
 
 	outgoingEV := event{
@@ -71,6 +73,36 @@ func handleRemovePlayerEvent(ev event, p *player) error {
 	}
 	for player := range p.hub.players {
 		player.egress <- outgoingEV
+	}
+
+	return nil
+}
+
+func handleMovePlayerEvent(ev event, p *player) error {
+	pld := player{}
+	err := json.Unmarshal(ev.Payload, &pld)
+	if err != nil {
+		log.Printf("error unmarshaling payload: %v", err)
+		return err
+	}
+
+	p.PX = pld.PX
+	p.PY = pld.PY
+	p.Angle = pld.Angle
+
+	data, err := json.Marshal(p)
+	if err != nil {
+		log.Printf("error marshaling player: %v\n", err)
+	}
+
+	outgoingEV := event{
+		Type:    EventMovePlayer,
+		Payload: data,
+	}
+	for player := range p.hub.players {
+		if player.ID != p.ID {
+			player.egress <- outgoingEV
+		}
 	}
 
 	return nil
