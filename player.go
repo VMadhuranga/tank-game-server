@@ -20,9 +20,10 @@ type player struct {
 	connection *websocket.Conn
 	hub        *hub
 	egress     chan event
-	ID         string `json:"id"`
-	PX         int    `json:"pX"`
-	PY         int    `json:"pY"`
+	ID         string  `json:"id"`
+	PX         float64 `json:"pX"`
+	PY         float64 `json:"pY"`
+	Angle      int     `json:"angle"`
 }
 
 func (p *player) readMessages() {
@@ -119,7 +120,8 @@ func newPlayer(conn *websocket.Conn, h *hub) *player {
 		hub:        h,
 		egress:     make(chan event),
 		ID:         uuid.NewString(),
-		PX:         rand.IntN(1024 - 5),
-		PY:         rand.IntN(768 - 5),
+		PX:         float64(rand.IntN(1024 - 5)),
+		PY:         float64(rand.IntN(768 - 5)),
+		Angle:      0,
 	}
 }
