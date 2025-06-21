@@ -23,6 +23,8 @@ type hub struct {
 func (h *hub) setupEventHandlers() {
 	h.evHandlers[EventNewPlayer] = handleNewPlayerEvent
 	h.evHandlers[EventMovePlayer] = handleMovePlayerEvent
+	h.evHandlers[EventBulletHit] = handleBulletHitEvent
+	h.evHandlers[EventShoot] = handleShootEvent
 }
 
 func (h *hub) handleEvents(ev event, p *player) error {
