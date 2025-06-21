@@ -22,6 +22,7 @@ type hub struct {
 
 func (h *hub) setupEventHandlers() {
 	h.evHandlers[EventNewPlayer] = handleNewPlayerEvent
+	h.evHandlers[EventOtherPlayers] = handleOtherPlayersEvent
 	h.evHandlers[EventMovePlayer] = handleMovePlayerEvent
 	h.evHandlers[EventBulletHit] = handleBulletHitEvent
 	h.evHandlers[EventShoot] = handleShootEvent
@@ -61,13 +62,14 @@ func (h *hub) removeFromPlayers(p *player) {
 	}
 }
 
-func (h *hub) getAllPlayers(p *player) []*player {
+func (h *hub) getOtherPlayers(p *player) []*player {
 	players := []*player{}
 	for player := range p.hub.players {
 		if player.ID != p.ID {
 			players = append(players, player)
 		}
 	}
+
 	return players
 }
 
