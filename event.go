@@ -7,7 +7,7 @@ import (
 
 const (
 	EventNewPlayer    = "new_player"
-	EventAllPlayers   = "all_players"
+	EventOtherPlayers = "other_players"
 	EventRemovePlayer = "remove_player"
 	EventMovePlayer   = "move_player"
 	EventBulletHit    = "bullet_hit"
@@ -17,24 +17,6 @@ const (
 type event struct {
 	Type    string          `json:"type"`
 	Payload json.RawMessage `json:"payload"`
-}
-
-func handleAllPlayersEvent(ev event, p *player) error {
-	players := p.hub.getAllPlayers(p)
-	data, err := json.Marshal(players)
-	if err != nil {
-		log.Printf("error marshaling players: %v\n", err)
-		return err
-	}
-
-	outgoingEV := event{
-		Type:    EventAllPlayers,
-		Payload: data,
-	}
-
-	p.egress <- outgoingEV
-
-	return nil
 }
 
 func handleNewPlayerEvent(ev event, p *player) error {
@@ -53,11 +35,22 @@ func handleNewPlayerEvent(ev event, p *player) error {
 		player.egress <- outgoingEV
 	}
 
-	err = handleAllPlayersEvent(ev, p)
+	return nil
+}
+
+func handleOtherPlayersEvent(ev event, p *player) error {
+	players := p.hub.getOtherPlayers(p)
+	data, err := json.Marshal(players)
 	if err != nil {
-		log.Printf("error handling all players event: %v", err)
+		log.Printf("error marshaling players: %v\n", err)
 		return err
 	}
+
+	outgoingEV := event{
+		Type:    EventOtherPlayers,
+		Payload: data,
+	}
+	p.egress <- outgoingEV
 
 	return nil
 }
