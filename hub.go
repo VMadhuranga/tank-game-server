@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -71,6 +72,21 @@ func (h *hub) getOtherPlayers(p *player) []*player {
 	}
 
 	return players
+}
+
+func (h *hub) handlePlayable(w http.ResponseWriter, r *http.Request) {
+	data, err := json.Marshal(map[string]bool{
+		"playable": len(h.players) <= 50,
+	})
+	if err != nil {
+		log.Printf("error marshaling players length")
+		w.WriteHeader(500)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	w.Write(data)
 }
 
 func (h *hub) serveWS(w http.ResponseWriter, r *http.Request) {
