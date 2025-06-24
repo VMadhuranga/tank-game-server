@@ -12,6 +12,7 @@ func main() {
 
 	mux := http.ServeMux{}
 	mux.Handle("/", http.FileServer(http.Dir("client")))
+	mux.HandleFunc("/playable", h.handlePlayable)
 	mux.HandleFunc("/ws", h.serveWS)
 
 	server := http.Server{
