@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -15,12 +16,13 @@ func main() {
 	mux.HandleFunc("/playable", h.handlePlayable)
 	mux.HandleFunc("/ws", h.serveWS)
 
+	port := os.Getenv("PORT")
 	server := http.Server{
-		Addr:    ":" + "8080",
+		Addr:    ":" + port,
 		Handler: &mux,
 	}
 
-	log.Printf("server listening on port: %v", "8080")
+	log.Printf("server listening on port: %v", port)
 	err := server.ListenAndServe()
 	if err != nil {
 		log.Fatalf("error listening to server: %v\n", err)
