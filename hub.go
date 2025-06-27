@@ -76,7 +76,7 @@ func (h *hub) getOtherPlayers(p *player) []*player {
 
 func (h *hub) handlePlayable(w http.ResponseWriter, r *http.Request) {
 	data, err := json.Marshal(map[string]bool{
-		"playable": len(h.players) <= 50,
+		"playable": len(h.players) < 10,
 	})
 	if err != nil {
 		log.Printf("error marshaling players length")
