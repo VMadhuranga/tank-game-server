@@ -25,6 +25,7 @@ func (h *hub) setupEventHandlers() {
 	h.evHandlers[EventNewPlayer] = handleNewPlayerEvent
 	h.evHandlers[EventOtherPlayers] = handleOtherPlayersEvent
 	h.evHandlers[EventMovePlayer] = handleMovePlayerEvent
+	h.evHandlers[EventPlayerHit] = handlePlayerHitEvent
 	h.evHandlers[EventBulletHit] = handleBulletHitEvent
 	h.evHandlers[EventShoot] = handleShootEvent
 }
