@@ -10,6 +10,7 @@ const (
 	EventOtherPlayers = "other_players"
 	EventRemovePlayer = "remove_player"
 	EventMovePlayer   = "move_player"
+	EventPlayerHit    = "player_hit"
 	EventBulletHit    = "bullet_hit"
 	EventShoot        = "shoot"
 )
@@ -98,6 +99,18 @@ func handleMovePlayerEvent(ev event, p *player) error {
 		if player.ID != p.ID {
 			player.egress <- outgoingEV
 		}
+	}
+
+	return nil
+}
+
+func handlePlayerHitEvent(ev event, p *player) error {
+	outgoingEV := event{
+		Type:    EventPlayerHit,
+		Payload: ev.Payload,
+	}
+	for player := range p.hub.players {
+		player.egress <- outgoingEV
 	}
 
 	return nil
